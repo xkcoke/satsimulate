@@ -26,17 +26,19 @@ episode = 100;
 i = 0;
 wob = w0;
 q = q0;
-xmem = zeros(episode,7);
+xmem = zeros(episode,10);
 while i < episode
     wob = reshape(wob,3,1);
     q = reshape(q,4,1);
     qe = satTarget(q, qt);
     T = attiControl(wob, qe, Kd, Kp);
+    Tmem = reshape(T,1,3);
     x0 = [wob;q];
     [tout, xout] = ode23tb(@satbody, [t0 dt], x0, odeset(), T, I, wio);
     wob = xout(end, 1:3);
     q = xout(end, 4:7);
     i = i+1;
-    xmem(i,:) = xout(end,:);
+    xmem(i,1:7) = xout(end,:);
+    xmem(i,8:10) = Tmem;
 %     q(1) = sqrt(abs(1 - sum(q(2:4).^2)));%¼õÉÙÀÛ¼ÆÎó²î
 end
