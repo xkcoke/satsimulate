@@ -5,8 +5,8 @@ format long;
 I = [1.25 0 0;0 9.65 0;0 0 9.65];
 T = [0; 0; 0];
 % w0 = [0.17;0.17;0.17];
-w0 = [0;0;0];
 d2r = pi/180;
+w0 = [0.1;0.1;0.1] * d2r;
 angle0 = [0 42.7 5.6] * d2r;
 q0 = angle2quat(angle0(3), angle0(2), angle0(1), 'ZYX');
 anglet = [10 10 30] * d2r;
@@ -34,7 +34,7 @@ while i < episode
     qe = satTarget(q, qt);
     T = attiControl(wob, qe, Kd, Kp);
     Tmem = reshape(T,1,3);
-    T = [0;0;0];
+    T = [0.01;0.02;0.03];
     x0 = [wob;q];
     [tout, xout] = ode23tb(@satbody, [t0 dt], x0, odeset(), T, I, wio);
     wob = xout(end, 1:3);
