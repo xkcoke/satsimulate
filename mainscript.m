@@ -24,18 +24,19 @@ dt = 0.02;
 
 episode = 100;
 i = 0;
-wob = w0;
+wib = w0;
 q = q0;
 xmem = zeros(episode,10);
 while i < episode
-    wob = reshape(wob,3,1);
+    wib = reshape(wib,3,1);
     q = reshape(q,4,1);
     qe = satTarget(q, qt);
+    wob = wib2wob(wib, q, wio);
     T = attiControl(wob, qe, Kd, Kp);
     Tmem = reshape(T,1,3);
-    x0 = [wob;q];
+    x0 = [wib;q];
     [tout, xout] = ode23tb(@satbody, [t0 dt], x0, odeset(), T, I, wio);
-    wob = xout(end, 1:3);
+    wib = xout(end, 1:3);
     q = xout(end, 4:7);
     i = i+1;
     xmem(i,1:7) = xout(end,:);

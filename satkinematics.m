@@ -6,9 +6,7 @@ function [ dq ] = satkinematics( t, q, wib, wio )
 %dq 为列向量 4*1
 
 % wio = [wio 0];
-    wib = reshape(wib, 1, 3);
-    wio = reshape(wio, 1, 3);%保证格式正确
-    w = wib - (calcC(q) * wio')';
+    w = wib2wob(wib, q, wio);
     w = [w 0];
     dq = 0.5 * quatmultiply(q', w)';
 
