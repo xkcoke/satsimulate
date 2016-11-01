@@ -35,7 +35,7 @@ while i < episode
     T = attiControl(wob, qe, Kd, Kp);
     Tmem = reshape(T,1,3);
     x0 = [wib;q];
-    [tout, xout] = ode23tb(@satbody, [t0 dt], x0, odeset(), T, I, wio);
+    [tout, xout] = ode23tb(@satbody, [t0+(i-1)*dt i*dt], x0, odeset(), T, I, wio);
     wib = xout(end, 1:3);
     q = xout(end, 4:7);
     i = i+1;
