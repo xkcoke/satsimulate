@@ -9,7 +9,7 @@ q = reshape(q,1,4);
 
 % wio = [wio 0];
     w = wib2wob(wib, q, wio);
-    w = [w 0];
+    w = [0 w];
     dq = 0.5 * quatmultiply(q, w)';
 
 end
