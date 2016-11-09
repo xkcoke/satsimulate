@@ -16,18 +16,32 @@ noig = [1 1 1] * 1/3 * 5 * 10 ^(-5) * d2r;
 PDw = [5 5 5];%PID权重
 Kp = [I(1,1)/0.515*PDw(1)^2*0.6 I(2,2)/3.18*PDw(2)^2*0.6 I(3,3)/1.59*PDw(3)^2*0.6]*2;
 Kd = [4*PDw(1)*I(1,1)/0.515, 2*PDw(2)*I(2,2)/3.18, 4*PDw(3)*I(3,3)/1.59]*sqrt(0.6);
-
 t0 = 0;
 dt = 0.05;
+tf = 10;
 
-% [tout,wout] = ode23tb(@satdynamic, [t0 tt], w0, odeset(), I, T);
+try
+    stkClose(conid);
+    stkClose();
+catch ME
+    disp('stkClose Message');
+end
+satPath = '*/Satellite/Satellite1';
+scenario = 'Scenario/test2';
+cb = 'Earth';
+stkInit;%确保stk已经打开
+conid = stkOpen(stkDefaultHost);
+stkExec(conid, ['Animate ' scenario ' Reset']);
+stkExec(conid, ['SetAnimation ' scenario ' TimeStep ' num2str(dt)]);
+stkSetAttitudeCBI(satPath, cb, 0, q0');
 
-episode = 200;
 i = 0;
 wib = w0;
 q = q0;
-xmem = zeros(episode,10);
-while i < episode
+xmem = zeros(length(t0:dt:tf),10);
+for t = t0:dt:tf
+    i = i+1;
+    disp(i);
     wib = reshape(wib,3,1);
     q = reshape(q,4,1);
     qe = satTarget(q, qt);
@@ -35,11 +49,11 @@ while i < episode
     T = attiControl(wob, qe, Kd, Kp);
     Tmem = reshape(T,1,3);
     x0 = [wib;q];
-    [tout, xout] = ode23tb(@satbody, [t0+(i-1)*dt i*dt], x0, odeset(), T, I, wio);
+    [tout, xout] = ode23tb(@satbody, [t t+dt], x0, odeset(), T, I, wio, satPath, dt);
     wib = xout(end, 1:3);
     q = xout(end, 4:7);
-    i = i+1;
+   stkSetAttitudeCBI(satPath, cb, t+dt, q');
+   stkExec(conid, ['Animate ' scenario ' Step Forward']);
     xmem(i,1:7) = xout(end,:);
     xmem(i,8:10) = Tmem;
-%     q(1) = sqrt(abs(1 - sum(q(2:4).^2)));%减少累计误差
 end
