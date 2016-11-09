@@ -39,9 +39,10 @@ i = 0;
 wib = w0;
 q = q0;
 xmem = zeros(length(t0:dt:tf),10);
+sunVector = zeros(1, 3);
 for t = t0:dt:tf
     i = i+1;
-    disp(i);
+    disp(t);
     wib = reshape(wib,3,1);
     q = reshape(q,4,1);
     qe = satTarget(q, qt);
@@ -49,7 +50,11 @@ for t = t0:dt:tf
     T = attiControl(wob, qe, Kd, Kp);
     Tmem = reshape(T,1,3);
     x0 = [wib;q];
-    [tout, xout] = ode23tb(@satbody, [t t+dt], x0, odeset(), T, I, wio, satPath, dt);
+    temp = stkReport(satPath, 'SunVector', t, t, dt);
+    for j = 2:4;
+        sunVector(j) = temp{1}(j).data;
+    end
+    [tout, xout] = ode23tb(@satbody, [t t+dt], x0, odeset(), T, I, wio, sunVector);
     wib = xout(end, 1:3);
     q = xout(end, 4:7);
    stkSetAttitudeCBI(satPath, cb, t+dt, q');

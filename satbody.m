@@ -1,9 +1,9 @@
-function [ dx ] = satbody( t, x, Torque, I, wio, satPath, dt )
+function [ dx ] = satbody( t, x, Torque, I, wio, sunVector )
 %SATBODY Summary of this function goes here
 %   Detailed explanation goes here
     w = x(1:3);
     q = x(4:7);
-    Td = satSunray(wio, t, dt, satPath);%Notice: Sun is visible or not
+    Td = satSunray(wio, t, sunVector);%Notice: Sun is visible or not
     Tg = satGravity(I, wio, q);
     Ta = satAeroTorque(wio, t);
     Torque = Torque + Td + Tg + Ta;

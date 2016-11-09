@@ -1,4 +1,4 @@
-function [ Td ] = satSunray( wio, t, dt, satPath )
+function [ Td ] = satSunray( wio, t, sunVector )
 %SATSUN Summary of this function goes here
 %   Detailed explanation goes here
     Kn = 1*10^(-5);
@@ -6,12 +6,7 @@ function [ Td ] = satSunray( wio, t, dt, satPath )
     rx = 0.5;
     rz = 0.5;
     ry = 2;
-    sunVector = zeros(1,3);%1:x, 2:y, 3:z
     Td = zeros(1,3);%Sun Density Torque
-    temp = stkReport(satPath, 'SunVector', t, t, dt);
-    for i = 2:4;
-        sunVector(i) = temp{1}(i).data;
-    end
     deltaX = acos(sunVector(1)/sqrt(sum(sunVector.^2)));
     deltaZ = acos(sunVector(3)/sqrt(sum(sunVector.^2)));
     eta =  acos(sunVector(3)/sqrt(sunVector(1)^2+sunVector(3)^2));
